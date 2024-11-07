@@ -1,0 +1,12 @@
+body {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #70c5ce; /* Sky blue background */
+}
+
+canvas {
+  display: block;
+  margin: 0 auto;
+  background-color: #70c5ce; /* Match the body's background */
+}

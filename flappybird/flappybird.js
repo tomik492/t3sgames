@@ -16,13 +16,7 @@ let pipeGap = initialPipeGap;
 const DEGREE = Math.PI / 180;
 
 // Add title element to the page
-document.body.insertAdjacentHTML('beforebegin', `
-    <div id="game-header" style="text-align: center; padding: 20px; font-family: Arial, sans-serif; font-size: 32px; font-weight: bold; background-color: #FFDD57;">
-        Flappy Bird Clone
-    </div>
-`);
-
-// CSS for responsive scaling
+// Updated CSS for responsive scaling
 document.body.insertAdjacentHTML('beforeend', `
     <style>
         #gameCanvas {
@@ -39,34 +33,48 @@ document.body.insertAdjacentHTML('beforeend', `
             background-color: #F0F0F0;
             margin: 0;
         }
-        @media (min-width: 768px) {
-            #gameCanvas {
-                width: 35vw;
-                height: calc(35vw * 1.5);
-                max-width: 500px;
-                max-height: 750px;
-            }
-        }
-        @media (max-width: 768px) {
-            #gameCanvas {
-                width: 85vw;
-                height: calc(85vw * 1.5);
-            }
-        }
     </style>
 `);
 
-// Resize canvas to maintain aspect ratio
+// Resize canvas to maintain aspect ratio and handle scaling
 function resizeCanvas() {
     const aspectRatio = GAME_WIDTH / GAME_HEIGHT;
-    const scaleFactor = Math.min(window.innerWidth / (GAME_WIDTH * 1.1), window.innerHeight / (GAME_HEIGHT * 1.1), 1);
-    canvas.width = GAME_WIDTH * scaleFactor;
-    canvas.height = GAME_HEIGHT * scaleFactor;
-    ctx.setTransform(scaleFactor, 0, 0, scaleFactor, 0, 0);
+
+    // Maximum canvas dimensions (95% of window size to provide some padding)
+    const maxWidth = window.innerWidth * 0.95;
+    const maxHeight = window.innerHeight * 0.95;
+
+    // Calculate the canvas dimensions, maintaining aspect ratio
+    let canvasWidth = maxWidth;
+    let canvasHeight = canvasWidth / aspectRatio;
+
+    // If the calculated height is larger than maxHeight, adjust dimensions
+    if (canvasHeight > maxHeight) {
+        canvasHeight = maxHeight;
+        canvasWidth = canvasHeight * aspectRatio;
+    }
+
+    // Set the canvas CSS dimensions
+    canvas.style.width = canvasWidth + 'px';
+    canvas.style.height = canvasHeight + 'px';
+
+    // Adjust for device pixel ratio
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = canvasWidth * dpr;
+    canvas.height = canvasHeight * dpr;
+
+    // Reset transformations before applying new scaling
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+
+    // Scale the context uniformly
+    const scale = canvas.width / GAME_WIDTH;
+    ctx.scale(scale, scale);
 }
 
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
+
+// Rest of your game code remains the same...
 
 // Bird object
 const bird = {

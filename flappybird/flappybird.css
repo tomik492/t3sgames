@@ -1,12 +1,30 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
 body {
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #70c5ce; /* Sky blue background */
+    overflow: hidden;
+    background-color: #70c5ce;
+    height: 100vh;
+    width: 100vw;
+}
+
+#game-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 canvas {
-  display: block;
-  margin: 0 auto;
-  background-color: #70c5ce; /* Match the body's background */
+    display: block;
+    background-color: #70c5ce;
+    touch-action: none;
 }

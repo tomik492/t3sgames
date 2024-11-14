@@ -2,9 +2,13 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Load bird image
+const birdImg = new Image();
+birdImg.src = 'images/bird.png';
+
 // Game variables
 let frames = 0;
-let score = 0;  // Added score variable
+let score = 0;
 const DEGREE = Math.PI / 180;
 
 // Bird object
@@ -16,10 +20,19 @@ const bird = {
     gravity: 0.25,
     lift: -6,
     velocity: 0,
+    rotation: 0,
 
     draw: function() {
-        ctx.fillStyle = 'yellow';
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.save();
+        ctx.translate(this.x + this.width/2, this.y + this.height/2);
+        
+        // Rotate based on velocity
+        this.rotation = this.velocity * 3;
+        this.rotation = Math.max(-25, Math.min(this.rotation, 25)); // Limit rotation
+        ctx.rotate(this.rotation * DEGREE);
+        
+        ctx.drawImage(birdImg, -this.width/2, -this.height/2, this.width, this.height);
+        ctx.restore();
     },
 
     update: function() {
@@ -32,21 +45,16 @@ const bird = {
     }
 };
 
-// Pipe variables
-let initialPipeGap = 200; // Starting gap size between pipes
-let minPipeGap = 80;      // Minimum gap size to prevent impossibility
-let pipeGap = initialPipeGap; // Current gap size
-
-let initialPipeWidth = 80; // Starting pipe width
-let minPipeWidth = 40;     // Minimum pipe width
-let pipeWidth = initialPipeWidth; // Current pipe width
-
+// Rest of your code remains unchanged from here
+let initialPipeGap = 200;
+let minPipeGap = 80;
+let pipeGap = initialPipeGap;
+let initialPipeWidth = 80;
+let minPipeWidth = 40;
+let pipeWidth = initialPipeWidth;
 const pipeSpeed = 2;
-
-// Pipe array
 const pipes = [];
 
-// Create pipes at intervals
 function createPipe() {
     const maxPipeY = canvas.height - pipeGap - 50;
     const pipeY = Math.floor(Math.random() * maxPipeY) + 25;
@@ -55,11 +63,10 @@ function createPipe() {
         y: pipeY,
         width: pipeWidth,
         gap: pipeGap,
-        passed: false  // New property to track if pipe has been passed
+        passed: false
     });
 }
 
-// Update pipes position
 function updatePipes() {
     if (frames % 150 === 0) {
         createPipe();
@@ -68,13 +75,11 @@ function updatePipes() {
     for (let i = 0; i < pipes.length; i++) {
         pipes[i].x -= pipeSpeed;
 
-        // Check if the bird has passed the pipe
         if (!pipes[i].passed && pipes[i].x + pipes[i].width < bird.x) {
             pipes[i].passed = true;
-            score++;  // Increment score when bird passes a pipe
+            score++;
         }
 
-        // Remove pipes that have gone off screen
         if (pipes[i].x + pipes[i].width < 0) {
             pipes.splice(i, 1);
             i--;
@@ -82,25 +87,73 @@ function updatePipes() {
     }
 }
 
-// Draw pipes
 function drawPipes() {
-    ctx.fillStyle = 'green';
     for (let i = 0; i < pipes.length; i++) {
-        // Top pipe
-        ctx.fillRect(pipes[i].x, 0, pipes[i].width, pipes[i].y);
-        // Bottom pipe
-        ctx.fillRect(
+        // Colors for pipe styling
+        const pipeColor = '#74BF2E';
+        const highlightColor = '#8ED53A';
+        const shadowColor = '#5CA918';
+        const borderColor = '#534D48';
+        
+        // Draw top pipe
+        drawStylizedPipe(
+            pipes[i].x,
+            0,
+            pipes[i].width,
+            pipes[i].y,
+            true,
+            pipeColor,
+            highlightColor,
+            shadowColor,
+            borderColor
+        );
+        
+        // Draw bottom pipe
+        drawStylizedPipe(
             pipes[i].x,
             pipes[i].y + pipes[i].gap,
             pipes[i].width,
-            canvas.height - pipes[i].y - pipes[i].gap
+            canvas.height - pipes[i].y - pipes[i].gap,
+            false,
+            pipeColor,
+            highlightColor,
+            shadowColor,
+            borderColor
         );
     }
 }
 
-// Collision detection
+function drawStylizedPipe(x, y, width, height, isTop, mainColor, highlightColor, shadowColor, borderColor) {
+    const capHeight = 40;
+    
+    ctx.fillStyle = mainColor;
+    
+    // Main pipe body
+    ctx.fillRect(x, y + (isTop ? capHeight : 0), width, height - capHeight);
+    
+    // Pipe cap
+    ctx.fillRect(x - 5, isTop ? y + height - capHeight : y, width + 10, capHeight);
+    
+    // Highlights
+    ctx.fillStyle = highlightColor;
+    ctx.fillRect(x + 3, y + (isTop ? capHeight : 0), 5, height - capHeight);
+    
+    // Shadows
+    ctx.fillStyle = shadowColor;
+    ctx.fillRect(x + width - 8, y + (isTop ? capHeight : 0), 5, height - capHeight);
+    
+    // Border
+    ctx.strokeStyle = borderColor;
+    ctx.lineWidth = 2;
+    
+    // Main pipe borders
+    ctx.strokeRect(x, y + (isTop ? capHeight : 0), width, height - capHeight);
+    
+    // Cap borders
+    ctx.strokeRect(x - 5, isTop ? y + height - capHeight : y, width + 10, capHeight);
+}
+
 function checkCollision() {
-    // Check collision with pipes
     for (let i = 0; i < pipes.length; i++) {
         if (
             bird.x < pipes[i].x + pipes[i].width &&
@@ -112,54 +165,47 @@ function checkCollision() {
         }
     }
 
-    // Check collision with ground and ceiling
     if (bird.y + bird.height > canvas.height || bird.y < 0) {
         resetGame();
     }
 }
 
-// Reset game
 function resetGame() {
     bird.y = 150;
     bird.velocity = 0;
     pipes.length = 0;
     frames = 0;
-    pipeGap = initialPipeGap;      // Reset the pipe gap
-    pipeWidth = initialPipeWidth;  // Reset the pipe width
-    score = 0;                     // Reset the score
+    pipeGap = initialPipeGap;
+    pipeWidth = initialPipeWidth;
+    score = 0;
 }
 
-// Draw everything
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     bird.draw();
     drawPipes();
-    drawScore();  // Call the new function to draw the score
+    drawScore();
 }
 
-// Update game logic
 function update() {
     bird.update();
     updatePipes();
     checkCollision();
 
-    // Gradually decrease the pipe gap and width over time
     if (pipeGap > minPipeGap) {
-        pipeGap -= 0.05; // Adjust this value to change the rate of decrease
+        pipeGap -= 0.05;
     }
     if (pipeWidth > minPipeWidth) {
-        pipeWidth -= 0.005; // Adjust this value to change the rate of decrease
+        pipeWidth -= 0.005;
     }
 }
 
-// Draw the score on the canvas
 function drawScore() {
     ctx.fillStyle = 'white';
     ctx.font = '30px Arial';
     ctx.fillText('Score: ' + score, 10, 40);
 }
 
-// Game loop
 function loop() {
     update();
     draw();
@@ -167,7 +213,6 @@ function loop() {
     requestAnimationFrame(loop);
 }
 
-// Control the bird with mouse click or spacebar
 canvas.addEventListener('click', function() {
     bird.flap();
 });
@@ -178,5 +223,7 @@ document.addEventListener('keydown', function(e) {
     }
 });
 
-// Start the game
-loop();
+// Wait for image to load before starting
+birdImg.onload = function() {
+    loop();
+};

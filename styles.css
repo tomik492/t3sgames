@@ -1,32 +1,242 @@
-h1 {
-    color: rgb(12, 25, 200);
-    text-align: center;
-    font-family: Arial, sans-serif;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-h2 {
-    font-family: Arial, sans-serif;
-    text-align: center;
-    color: rgb(211, 7, 243);
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    color: #ffffff;
+    min-height: 100vh;
 }
 
-.game-button {
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Navigation */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: 800;
+    background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-link {
+    color: #ffffff;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 60px 0;
+}
+
+.glowing-text {
+    font-size: 48px;
+    margin-bottom: 20px;
+    text-shadow: 0 0 10px rgba(78, 205, 196, 0.5),
+                 0 0 20px rgba(78, 205, 196, 0.3),
+                 0 0 30px rgba(78, 205, 196, 0.1);
+    animation: glow 2s ease-in-out infinite alternate;
+}
+
+.subtitle {
+    font-size: 20px;
+    color: #9ca3af;
+    margin-bottom: 60px;
+}
+
+/* Games Grid */
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+    padding: 20px;
+}
+
+.game-card {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 20px;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.game-card:hover {
+    transform: translateY(-5px);
+}
+
+.game-icon {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    animation: bounce 7s linear infinite;
+}
+
+@keyframes bounce {
+    0% {
+        top: 20px;
+        left: 20px;
+    }
+    25% {
+        top: 140px;
+        left: 240px;
+    }
+    50% {
+        top: 20px;
+        left: 240px;
+    }
+    75% {
+        top: 140px;
+        left: 20px;
+    }
+    100% {
+        top: 20px;
+        left: 20px;
+    }
+}
+
+.game-img {
+    height: 200px;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    background-size: cover;
+    background-position: center;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.game-card h3 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+.game-card p {
+    color: #9ca3af;
+    margin-bottom: 20px;
+}
+
+.play-button {
     display: inline-block;
-    padding: 10px 20px;
-    background-color: #4CAF50;
+    padding: 12px 30px;
+    background: linear-gradient(45deg, #4ecdc4, #45b7af);
     color: white;
     text-decoration: none;
-    text-align: center;
-    font: Arial, sans-serif;
-    border-radius: 5px;
-    font-weight: bold;
-    transition: background-color 0.3s;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    }
+    border-radius: 25px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
 
-.game-button:hover {
-    background-color: #45a049;
+.play-button:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 20px rgba(78, 205, 196, 0.4);
+}
+
+.button-effects {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.1);
+    transform: rotate(45deg);
+    transition: all 0.3s ease;
+}
+
+.play-button:hover .button-effects {
+    top: -100%;
+    left: -100%;
+}
+
+.coming-soon .game-img {
+    background: rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.coming-soon .play-button {
+    background: #666;
+    cursor: not-allowed;
+}
+
+.coming-soon .play-button:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 20px 0;
+    color: #9ca3af;
+    margin-top: 40px;
+}
+
+/* Animations */
+@keyframes glow {
+    from {
+        text-shadow: 0 0 10px rgba(78, 205, 196, 0.5),
+                     0 0 20px rgba(78, 205, 196, 0.3),
+                     0 0 30px rgba(78, 205, 196, 0.1);
     }
+    to {
+        text-shadow: 0 0 20px rgba(78, 205, 196, 0.6),
+                     0 0 30px rgba(78, 205, 196, 0.4),
+                     0 0 40px rgba(78, 205, 196, 0.2);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .nav-links {
+        display: none;
+    }
+    
+    .glowing-text {
+        font-size: 36px;
+    }
+    
+    .games-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .game-card {
+        margin: 0 auto;
+        max-width: 400px;
+    }
+}

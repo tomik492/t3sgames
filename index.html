@@ -1,15 +1,60 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>t3sgames</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T3S Games</title>
     <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/x-icon" href="images/favicon.ico">
+    <link rel="icon" type="image/png" href="flappybird/images/bird.png">
+    <link rel="apple-touch-icon" href="flappybird/images/bird.png">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>T3S GAMES</h1>
-    <h2>this is my webpage</h2>
-    <a href="flappybird/flappybird.html" class="game-button">
-        Play Flappy Bird
-    </a>
+    <div class="container">
+        <header>
+            <nav>
+                <div class="logo">T3S GAMES</div>
+                <div class="nav-links">
+                    <a href="#" class="nav-link">Home</a>
+                    <a href="#" class="nav-link">Games</a>
+                    <a href="#" class="nav-link">About</a>
+                </div>
+            </nav>
+        </header>
+
+        <main>
+            <div class="hero">
+                <h1 class="glowing-text">Welcome to T3S Games</h1>
+                <p class="subtitle">Discover Amazing Gaming Experiences</p>
+                
+                <div class="games-grid">
+                    <div class="game-card">
+                        <div class="game-img flappy-bird">
+                            <img src="flappybird/images/bird.png" alt="Flappy Bird" class="game-icon">
+                        </div>
+                        <h3>Flappy Bird</h3>
+                        <p>Test your reflexes in this addictive classic!</p>
+                        <a href="flappybird/flappybird.html" class="play-button">
+                            Play Now
+                            <span class="button-effects"></span>
+                        </a>
+                    </div>
+                    
+                    <div class="game-card coming-soon">
+                        <div class="game-img"></div>
+                        <h3>Coming Soon</h3>
+                        <p>More exciting games on the way!</p>
+                        <button class="play-button" disabled>
+                            Coming Soon
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2024 T3S Games. All rights reserved.</p>
+        </footer>
+    </div>
 </body>
 </html>

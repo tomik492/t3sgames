@@ -57,6 +57,9 @@
         .gif {
             margin-top: 10px;
         }
+        .gif img {
+            width: 300px;
+        }
     </style>
 </head>
 <body>
@@ -89,14 +92,13 @@
             if (userAnswer.toFixed(2) == correctAnswer) {
                 feedback.textContent = "Boom! That's absolutely correct! You're on fire! 🔥";
                 feedback.style.color = "green";
-                gif.innerHTML = '<img src="../images/attaboy.gif" alt="Correct Answer" width="200">';
+                gif.innerHTML = '<img src="../images/attaboy.gif" alt="Correct Answer">';
+                setTimeout(generateProblem, 3000);
             } else {
                 feedback.textContent = `Oops! Not quite... Keep going, champ! The correct answer was ${correctAnswer}. 😉`;
                 feedback.style.color = "red";
-                gif.innerHTML = '<img src="../images/you_suck.gif" alt="Wrong Answer" width="200">';
+                gif.innerHTML = '<img src="../images/you_suck.gif" alt="Wrong Answer">';
             }
-
-            setTimeout(generateProblem, 3000);
         }
 
         generateProblem();

@@ -54,6 +54,9 @@
             font-size: 1.2em;
             font-weight: bold;
         }
+        .gif {
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -63,29 +66,34 @@
         <input type="number" id="answer" placeholder="Enter your answer" step="0.01">
         <button onclick="checkAnswer()">Check Answer</button>
         <div class="feedback" id="feedback"></div>
+        <div class="gif" id="gif"></div>
     </div>
     <script>
         let number1, number2;
 
         function generateProblem() {
-            number1 = (Math.random() * 1000).toFixed(2);
-            number2 = (Math.random() * 1000).toFixed(2);
+            number1 = (Math.random() * 100).toFixed(2);
+            number2 = (Math.random() * 100).toFixed(2);
             document.getElementById("problem").textContent = `${number1} × ${number2}`;
             document.getElementById("answer").value = "";
             document.getElementById("feedback").textContent = "";
+            document.getElementById("gif").innerHTML = "";
         }
 
         function checkAnswer() {
             const userAnswer = parseFloat(document.getElementById("answer").value);
             const correctAnswer = (number1 * number2).toFixed(2);
             const feedback = document.getElementById("feedback");
+            const gif = document.getElementById("gif");
 
             if (userAnswer.toFixed(2) == correctAnswer) {
                 feedback.textContent = "Boom! That's absolutely correct! You're on fire! 🔥";
                 feedback.style.color = "green";
+                gif.innerHTML = '<img src="../images/attaboy.gif" alt="Correct Answer" width="200">';
             } else {
                 feedback.textContent = `Oops! Not quite... Keep going, champ! The correct answer was ${correctAnswer}. 😉`;
                 feedback.style.color = "red";
+                gif.innerHTML = '<img src="../images/you_suck.gif" alt="Wrong Answer" width="200">';
             }
 
             setTimeout(generateProblem, 3000);

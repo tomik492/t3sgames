@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whole Number Division Practice</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 400px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+        }
+        .problem {
+            font-size: 1.5em;
+            margin: 20px 0;
+        }
+        input[type="number"] {
+            padding: 10px;
+            font-size: 1em;
+            width: calc(100% - 20px);
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .feedback {
+            margin-top: 20px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+        .gif {
+            margin-top: 10px;
+        }
+        .gif img {
+            width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Whole Number Division Practice</h1>
+        <div class="problem" id="problem">Ready?</div>
+        <input type="number" id="answer" placeholder="Enter your answer">
+        <button onclick="checkAnswer()">Check Answer</button>
+        <div class="feedback" id="feedback"></div>
+        <div class="gif" id="gif"></div>
+    </div>
+    <script>
+        // Generate all division problems that don't yield whole numbers
+        const nonWholeNumberProblems = [];
+        for (let i = 1; i <= 100; i++) {
+            for (let j = 1; j <= 100; j++) {
+                if (i % j !== 0) {
+                    nonWholeNumberProblems.push([i, j]);
+                }
+            }
+        }
+
+        let number1, number2;
+
+        function generateProblem() {
+            const randomIndex = Math.floor(Math.random() * nonWholeNumberProblems.length);
+            [number1, number2] = nonWholeNumberProblems[randomIndex];
+            
+            document.getElementById("problem").textContent = `${number1} ÷ ${number2}`;
+            document.getElementById("answer").value = "";
+            document.getElementById("feedback").textContent = "";
+            document.getElementById("gif").innerHTML = "";
+        }
+
+        function checkAnswer() {
+            const userAnswer = parseFloat(document.getElementById("answer").value);
+            const correctAnswer = number1 / number2;
+            const feedback = document.getElementById("feedback");
+            const gif = document.getElementById("gif");
+
+            if (userAnswer.toFixed(2) == correctAnswer.toFixed(2)) {
+                feedback.textContent = "Boom! That's absolutely correct! You're on fire! 🔥";
+                feedback.style.color = "green";
+                gif.innerHTML = '<img src="../images/attaboy.gif" alt="Correct Answer">';
+                setTimeout(generateProblem, 3000);
+            } else {
+                feedback.textContent = "Oops! Not quite... Keep going, champ!";
+                feedback.style.color = "red";
+                gif.innerHTML = '<img src="../images/you_suck.gif" alt="Wrong Answer">';
+            }
+        }
+
+        generateProblem();
+    </script>
+</body>
+</html>
+

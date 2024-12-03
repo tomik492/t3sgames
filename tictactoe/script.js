@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function findBestMove() {
         let bestScore = -Infinity;
         let bestMove = null;
-        const depth = 3; // Adjust the depth limit based on performance
+        const depth = 2; // Reduced depth for faster computation
 
         const possibleMoves = getPossibleMoves();
 
@@ -100,8 +100,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const row = Math.floor(index / 10);
         const col = index % 10;
 
-        for (let dr = -1; dr <= 1; dr++) {
-            for (let dc = -1; dc <= 1; dc++) {
+        for (let dr = -2; dr <= 2; dr++) {
+            for (let dc = -2; dc <= 2; dc++) {
                 if (dr === 0 && dc === 0) continue;
                 const newRow = row + dr;
                 const newCol = col + dc;
@@ -116,16 +116,21 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function minimax(depth, isMaximizing, alpha, beta) {
         if (checkWin(aiSymbol)) {
-            return 1000 + depth; // AI wins
+            return 10000 + depth; // AI wins
         }
         if (checkWin(playerSymbol)) {
-            return -1000 - depth; // Player wins
+            return -10000 - depth; // Player wins
         }
         if (depth === 0 || isBoardFull()) {
             return evaluateBoard(); // Evaluate the board
         }
 
         const possibleMoves = getPossibleMoves();
+
+        // Sort moves to improve alpha-beta pruning
+        possibleMoves.sort((a, b) => {
+            return getMoveScore(b, isMaximizing) - getMoveScore(a, isMaximizing);
+        });
 
         if (isMaximizing) {
             let maxEval = -Infinity;
@@ -170,26 +175,68 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    function evaluateBoard() {
+    function getMoveScore(index, isMaximizing) {
+        // Quick evaluation to order moves
+        const symbol = isMaximizing ? aiSymbol : playerSymbol;
+        return evaluatePosition(index, symbol);
+    }
+
+    function evaluatePosition(index, symbol) {
         let score = 0;
+        const row = Math.floor(index / 10);
+        const col = index % 10;
 
-        // Increase score for AI's potential sequences
-        score += countSequences(aiSymbol, 2) * 10;
-        score += countSequences(aiSymbol, 3) * 50;
-        score += countSequences(aiSymbol, 4) * 200;
+        // Evaluate immediate potential in all directions
+        const directions = [
+            { dr: 0, dc: 1 },
+            { dr: 1, dc: 0 },
+            { dr: 1, dc: 1 },
+            { dr: 1, dc: -1 },
+        ];
 
-        // Decrease score for player's potential sequences
-        score -= countSequences(playerSymbol, 2) * 10;
-        score -= countSequences(playerSymbol, 3) * 50;
-        score -= countSequences(playerSymbol, 4) * 200;
+        for (const { dr, dc } of directions) {
+            let count = 1;
+            count += countConsecutive(row, col, dr, dc, symbol);
+            count += countConsecutive(row, col, -dr, -dc, symbol);
+            score += Math.pow(10, count);
+        }
 
         return score;
     }
 
-    function countSequences(symbol, length) {
+    function countConsecutive(row, col, dr, dc, symbol) {
         let count = 0;
+        for (let k = 1; k < 5; k++) {
+            const r = row + dr * k;
+            const c = col + dc * k;
+            if (r < 0 || r >= 10 || c < 0 || c >= 10) break;
+            const index = r * 10 + c;
+            if (cells[index].textContent === symbol) {
+                count++;
+            } else if (cells[index].textContent !== "") {
+                break;
+            } else {
+                break;
+            }
+        }
+        return count;
+    }
 
-        // Directions: horizontal, vertical, diagonal (\), anti-diagonal (/)
+    function evaluateBoard() {
+        let score = 0;
+
+        // Increase score for AI's potential sequences
+        score += evaluatePotential(aiSymbol);
+
+        // Decrease score for player's potential sequences
+        score -= evaluatePotential(playerSymbol);
+
+        return score;
+    }
+
+    function evaluatePotential(symbol) {
+        let totalScore = 0;
+
         const directions = [
             { dr: 0, dc: 1 },
             { dr: 1, dc: 0 },
@@ -200,37 +247,49 @@ document.addEventListener("DOMContentLoaded", () => {
         for (let row = 0; row < 10; row++) {
             for (let col = 0; col < 10; col++) {
                 for (const { dr, dc } of directions) {
-                    let seqCount = 0;
-                    let blocked = false;
+                    let count = 0;
+                    let openEnds = 0;
 
-                    for (let k = 0; k < length; k++) {
+                    // Check forward
+                    for (let k = 0; k < 5; k++) {
                         const r = row + dr * k;
                         const c = col + dc * k;
-
-                        if (r < 0 || r >= 10 || c < 0 || c >= 10) {
-                            blocked = true;
-                            break;
-                        }
-
+                        if (r < 0 || r >= 10 || c < 0 || c >= 10) break;
                         const index = r * 10 + c;
-                        const cellContent = cells[index].textContent;
-
-                        if (cellContent === symbol) {
-                            seqCount++;
-                        } else if (cellContent !== "") {
-                            blocked = true;
+                        if (cells[index].textContent === symbol) {
+                            count++;
+                        } else if (cells[index].textContent === "") {
+                            openEnds++;
+                            break;
+                        } else {
                             break;
                         }
                     }
 
-                    if (seqCount === length && !blocked) {
-                        count++;
+                    // Check backward
+                    for (let k = 1; k < 5; k++) {
+                        const r = row - dr * k;
+                        const c = col - dc * k;
+                        if (r < 0 || r >= 10 || c < 0 || c >= 10) break;
+                        const index = r * 10 + c;
+                        if (cells[index].textContent === symbol) {
+                            count++;
+                        } else if (cells[index].textContent === "") {
+                            openEnds++;
+                            break;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    if (count >= 2 && openEnds > 0) {
+                        totalScore += Math.pow(10, count + openEnds - 1);
                     }
                 }
             }
         }
 
-        return count;
+        return totalScore;
     }
 
     function isBoardFull() {

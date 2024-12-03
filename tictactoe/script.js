@@ -48,91 +48,51 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function findBestMove() {
-        // Advanced strategy: try to win, block opponent, prioritize longer sequences, or pick a random cell
-        for (let i = 0; i < cells.length; i++) {
-            if (!cells[i].classList.contains("taken")) {
-                // Try to win
-                cells[i].textContent = aiSymbol;
-                if (checkWin(aiSymbol)) {
-                    cells[i].textContent = "";
-                    return i;
-                }
-                cells[i].textContent = "";
+        let bestScore = -Infinity;
+        let bestMove = null;
+        const depth = 3; // Adjust the depth limit based on performance
 
-                // Try to block opponent
-                cells[i].textContent = playerSymbol;
-                if (checkWin(playerSymbol)) {
-                    cells[i].textContent = "";
-                    return i;
-                }
-                cells[i].textContent = "";
+        const possibleMoves = getPossibleMoves();
+
+        for (let index of possibleMoves) {
+            // Simulate move
+            cells[index].textContent = aiSymbol;
+            cells[index].classList.add("taken");
+
+            let score = minimax(depth - 1, false, -Infinity, Infinity);
+
+            // Undo move
+            cells[index].textContent = "";
+            cells[index].classList.remove("taken");
+
+            if (score > bestScore) {
+                bestScore = score;
+                bestMove = index;
             }
         }
-
-        // Prioritize moves that extend a sequence of the AI's symbols
-        for (let i = 0; i < cells.length; i++) {
-            if (!cells[i].classList.contains("taken")) {
-                const neighbors = getNeighbors(i);
-                if (neighbors.some(cell => cell.textContent === aiSymbol)) {
-                    return i;
-                }
-            }
-        }
-
-        // Pick a random available cell
-        const availableCells = cells.filter(cell => !cell.classList.contains("taken"));
-        if (availableCells.length > 0) {
-            const randomIndex = Math.floor(Math.random() * availableCells.length);
-            return cells.indexOf(availableCells[randomIndex]);
-        }
-        return null;
+        return bestMove;
     }
 
-    function checkWin(symbol) {
-        // Check rows, columns, and diagonals for a 5-in-a-row win
-        // Check rows
-        for (let row = 0; row < 10; row++) {
-            for (let col = 0; col <= 5; col++) {
-                if (cells.slice(row * 10 + col, row * 10 + col + 5).every(cell => cell.textContent === symbol)) {
-                    return true;
+    function getPossibleMoves() {
+        const moves = new Set();
+
+        for (let i = 0; i < cells.length; i++) {
+            if (cells[i].classList.contains("taken")) {
+                const neighbors = getNeighbors(i);
+                for (const neighbor of neighbors) {
+                    if (!cells[neighbor].classList.contains("taken")) {
+                        moves.add(neighbor);
+                    }
                 }
             }
         }
-        // Check columns
-        for (let col = 0; col < 10; col++) {
-            for (let row = 0; row <= 5; row++) {
-                if (cells.filter((_, index) => index % 10 === col && Math.floor(index / 10) >= row && Math.floor(index / 10) < row + 5).every(cell => cell.textContent === symbol)) {
-                    return true;
-                }
-            }
+
+        // If the board is empty (no moves yet), pick the center cell
+        if (moves.size === 0) {
+            return [Math.floor(cells.length / 2)];
         }
-        // Check diagonals
-        for (let row = 0; row <= 5; row++) {
-            for (let col = 0; col <= 5; col++) {
-                // Check main diagonal (top-left to bottom-right)
-                if ([0, 1, 2, 3, 4].every(offset => cells[(row + offset) * 10 + (col + offset)].textContent === symbol)) {
-                    return true;
-                }
-                // Check anti-diagonal (top-right to bottom-left)
-                if ([0, 1, 2, 3, 4].every(offset => cells[(row + offset) * 10 + (col + 4 - offset)].textContent === symbol)) {
-                    return true;
-                }
-            }
-        }
-        // Check other diagonals (bottom-left to top-right and bottom-right to top-left)
-        for (let row = 4; row < 10; row++) {
-            for (let col = 0; col <= 5; col++) {
-                // Check bottom-left to top-right
-                if ([0, 1, 2, 3, 4].every(offset => cells[(row - offset) * 10 + (col + offset)].textContent === symbol)) {
-                    return true;
-                }
-                // Check bottom-right to top-left
-                if ([0, 1, 2, 3, 4].every(offset => cells[(row - offset) * 10 + (col + 4 - offset)].textContent === symbol)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+
+        return Array.from(moves);
     }
 
     function getNeighbors(index) {
@@ -140,13 +100,179 @@ document.addEventListener("DOMContentLoaded", () => {
         const row = Math.floor(index / 10);
         const col = index % 10;
 
-        // Add valid neighbors (adjacent cells)
-        if (row > 0) neighbors.push(cells[(row - 1) * 10 + col]); // Above
-        if (row < 9) neighbors.push(cells[(row + 1) * 10 + col]); // Below
-        if (col > 0) neighbors.push(cells[row * 10 + (col - 1)]); // Left
-        if (col < 9) neighbors.push(cells[row * 10 + (col + 1)]); // Right
+        for (let dr = -1; dr <= 1; dr++) {
+            for (let dc = -1; dc <= 1; dc++) {
+                if (dr === 0 && dc === 0) continue;
+                const newRow = row + dr;
+                const newCol = col + dc;
+                if (newRow >= 0 && newRow < 10 && newCol >= 0 && newCol < 10) {
+                    neighbors.push(newRow * 10 + newCol);
+                }
+            }
+        }
 
         return neighbors;
+    }
+
+    function minimax(depth, isMaximizing, alpha, beta) {
+        if (checkWin(aiSymbol)) {
+            return 1000 + depth; // AI wins
+        }
+        if (checkWin(playerSymbol)) {
+            return -1000 - depth; // Player wins
+        }
+        if (depth === 0 || isBoardFull()) {
+            return evaluateBoard(); // Evaluate the board
+        }
+
+        const possibleMoves = getPossibleMoves();
+
+        if (isMaximizing) {
+            let maxEval = -Infinity;
+            for (let index of possibleMoves) {
+                // Simulate move
+                cells[index].textContent = aiSymbol;
+                cells[index].classList.add("taken");
+
+                let eval = minimax(depth - 1, false, alpha, beta);
+
+                // Undo move
+                cells[index].textContent = "";
+                cells[index].classList.remove("taken");
+
+                maxEval = Math.max(maxEval, eval);
+                alpha = Math.max(alpha, eval);
+                if (beta <= alpha) {
+                    break; // Beta cutoff
+                }
+            }
+            return maxEval;
+        } else {
+            let minEval = Infinity;
+            for (let index of possibleMoves) {
+                // Simulate move
+                cells[index].textContent = playerSymbol;
+                cells[index].classList.add("taken");
+
+                let eval = minimax(depth - 1, true, alpha, beta);
+
+                // Undo move
+                cells[index].textContent = "";
+                cells[index].classList.remove("taken");
+
+                minEval = Math.min(minEval, eval);
+                beta = Math.min(beta, eval);
+                if (beta <= alpha) {
+                    break; // Alpha cutoff
+                }
+            }
+            return minEval;
+        }
+    }
+
+    function evaluateBoard() {
+        let score = 0;
+
+        // Increase score for AI's potential sequences
+        score += countSequences(aiSymbol, 2) * 10;
+        score += countSequences(aiSymbol, 3) * 50;
+        score += countSequences(aiSymbol, 4) * 200;
+
+        // Decrease score for player's potential sequences
+        score -= countSequences(playerSymbol, 2) * 10;
+        score -= countSequences(playerSymbol, 3) * 50;
+        score -= countSequences(playerSymbol, 4) * 200;
+
+        return score;
+    }
+
+    function countSequences(symbol, length) {
+        let count = 0;
+
+        // Directions: horizontal, vertical, diagonal (\), anti-diagonal (/)
+        const directions = [
+            { dr: 0, dc: 1 },
+            { dr: 1, dc: 0 },
+            { dr: 1, dc: 1 },
+            { dr: 1, dc: -1 },
+        ];
+
+        for (let row = 0; row < 10; row++) {
+            for (let col = 0; col < 10; col++) {
+                for (const { dr, dc } of directions) {
+                    let seqCount = 0;
+                    let blocked = false;
+
+                    for (let k = 0; k < length; k++) {
+                        const r = row + dr * k;
+                        const c = col + dc * k;
+
+                        if (r < 0 || r >= 10 || c < 0 || c >= 10) {
+                            blocked = true;
+                            break;
+                        }
+
+                        const index = r * 10 + c;
+                        const cellContent = cells[index].textContent;
+
+                        if (cellContent === symbol) {
+                            seqCount++;
+                        } else if (cellContent !== "") {
+                            blocked = true;
+                            break;
+                        }
+                    }
+
+                    if (seqCount === length && !blocked) {
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+
+    function isBoardFull() {
+        return cells.every(cell => cell.classList.contains("taken"));
+    }
+
+    function checkWin(symbol) {
+        // Check rows, columns, and diagonals for a 5-in-a-row win
+        const directions = [
+            { dr: 0, dc: 1 },   // Horizontal
+            { dr: 1, dc: 0 },   // Vertical
+            { dr: 1, dc: 1 },   // Diagonal (\)
+            { dr: 1, dc: -1 },  // Anti-diagonal (/)
+        ];
+
+        for (let row = 0; row < 10; row++) {
+            for (let col = 0; col < 10; col++) {
+                for (const { dr, dc } of directions) {
+                    let win = true;
+
+                    for (let k = 0; k < 5; k++) {
+                        const r = row + dr * k;
+                        const c = col + dc * k;
+
+                        if (r < 0 || r >= 10 || c < 0 || c >= 10) {
+                            win = false;
+                            break;
+                        }
+
+                        const index = r * 10 + c;
+                        if (cells[index].textContent !== symbol) {
+                            win = false;
+                            break;
+                        }
+                    }
+
+                    if (win) return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     function displayResult(message, color) {
@@ -179,3 +305,4 @@ document.addEventListener("DOMContentLoaded", () => {
         gameOver = false;
     }
 });
+

@@ -83,23 +83,23 @@
             document.getElementById("gif").innerHTML = "";
         }
 
-        function checkAnswer() {
-            const userAnswer = parseFloat(document.getElementById("answer").value);
-            const correctAnswer = (number1 * number2).toFixed(2);
-            const feedback = document.getElementById("feedback");
-            const gif = document.getElementById("gif");
+function checkAnswer() {
+    const userAnswer = parseFloat(document.getElementById("answer").value);
+    const correctAnswer = (number1 * number2).toFixed(2);
+    const feedback = document.getElementById("feedback");
+    const gif = document.getElementById("gif");
 
-            if (userAnswer.toFixed(2) == correctAnswer) {
-                feedback.textContent = "Boom! That's absolutely correct! You're on fire! 🔥";
-                feedback.style.color = "green";
-                gif.innerHTML = '<img src="../images/attaboy.gif" alt="Correct Answer">';
-                setTimeout(generateProblem, 3000);
-            } else {
-                feedback.textContent = `Oops! Not quite... Keep going, champ! The correct answer was ${correctAnswer}. 😉`;
-                feedback.style.color = "red";
-                gif.innerHTML = '<img src="../images/you_suck.gif" alt="Wrong Answer">';
-            }
-        }
+    if (userAnswer.toFixed(2) == correctAnswer) {
+        feedback.textContent = "Boom! That's absolutely correct! You're on fire! 🔥";
+        feedback.style.color = "green";
+        gif.innerHTML = '<img src="../images/attaboy.gif" alt="Correct Answer">';
+        setTimeout(generateProblem, 3000);
+    } else {
+        feedback.textContent = "Oops! Not quite... Keep going, champ!";
+        feedback.style.color = "red";
+        gif.innerHTML = '<img src="../images/you_suck.gif" alt="Wrong Answer">';
+    }
+}
 
         generateProblem();
     </script>

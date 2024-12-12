@@ -3,7 +3,13 @@ document.addEventListener("DOMContentLoaded", () => {
     const cells = [];
     const playerSymbol = "X";
     const aiSymbol = "O";
+    let difficulty = "medium"; // Default difficulty
     let gameOver = false;
+
+    const difficultySelector = document.getElementById("difficulty");
+    difficultySelector.addEventListener("change", () => {
+    difficulty = difficultySelector.value;
+    });
 
     // Initialize board
     for (let i = 0; i < 100; i++) {
@@ -47,10 +53,23 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function getDepthBasedOnDifficulty() {
+        switch (difficulty) {
+            case "easy":
+                return 1; // Shallow search
+            case "medium":
+                return 2; // Default depth
+            case "hard":
+                return 3; // Deeper search for harder AI
+            default:
+                return 2; // Fallback to medium
+        }
+    }
+
     function findBestMove() {
         let bestScore = -Infinity;
         let bestMove = null;
-        const depth = 2; // Reduced depth for faster computation
+        const depth = getDepthBasedOnDifficulty();
 
         const possibleMoves = getPossibleMoves();
 

@@ -9,6 +9,30 @@ body {
     margin: 0;
 }
 
+button {
+    background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+    border: none;
+    color: #ffffff;
+    padding: 10px 20px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-weight: bold;
+    transition: background 0.3s ease, transform 0.2s ease;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+button:hover {
+    background: linear-gradient(135deg, #2575fc 0%, #6a11cb 100%);
+    transform: scale(1.05);
+}
+
+button:active {
+    transform: scale(1);
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
 #game {
     text-align: center;
 }
@@ -63,4 +87,24 @@ h1 {
                      0 0 30px rgba(78, 205, 196, 0.4),
                      0 0 40px rgba(78, 205, 196, 0.2);
     }
+}
+
+#difficulty-selection {
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #ffffff;
+}
+
+#difficulty-selection label {
+    margin-right: 10px;
+}
+
+#difficulty-selection select {
+    padding: 5px;
+    font-size: 16px;
+    background: rgba(255, 255, 255, 0.1);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    cursor: pointer;
 }

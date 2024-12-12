@@ -39,7 +39,7 @@ Enhance your math skills with random decimal multiplication problems. Perfect fo
 ---
 
 ### 4. **Decimal Division**  
-<img src="images/division.png" alt="Decimal Division Icon" style="width: 40%; max-width: 500px;">  
+<img src="images/division.png" alt="Decimal Division Icon" style="width: 40%; max-width: 500px; display: block; margin: 0 auto;" >  
 Practice dividing decimal numbers in a fun and engaging way. Get immediate feedback on your answers!  
 [**Play Now**](https://tomik492.github.io/t3sgames/decimal_division/decimal.html)  
 

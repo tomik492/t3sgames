@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>Speed Typing Test</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles/typing.css">
+    <link rel="icon" type="image/x-icon" href="../images/favicon.ico">
+</head>
+<body>
+    <div class="container">
+        <h1>Speed Typing Game</h1>
+        <p class="subtitle">Improve your typing speed and accuracy</p>
+        
+        <div id="test-area">
+            <div id="word-container"></div>
+            <div id="cursor"></div>
+        </div>
+
+        <div id="stats">
+            <p>Time Left: <span id="time-left">60</span>s</p>
+            <p>Accuracy: <span id="accuracy">100</span>%</p>
+            <p>WPM: <span id="wpm">0</span></p>
+        </div>
+        
+        <div class="buttons">
+            <button id="start">Start</button>
+            <button id="restart" disabled>Restart</button>
+        </div>
+    </div>
+    <script src="typing.js"></script>
+</body>
+</html>

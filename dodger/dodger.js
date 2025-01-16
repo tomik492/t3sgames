@@ -30,6 +30,37 @@ let enemySpawner;
 // DOM elements
 const scoreDisplay = document.getElementById('score');
 const restartButton = document.getElementById('restartBtn');
+const joystickContainer = document.getElementById('joystickContainer');
+
+let joystick = null;
+let joystickDirection = { x: 0, y: 0 };
+
+// Detect mobile devices
+const isMobile = /Mobi|Android/i.test(navigator.userAgent);
+
+// Initialize joystick for mobile
+if (isMobile) {
+    joystickContainer.style.display = 'block';
+    joystick = nipplejs.create({
+        zone: joystickContainer,
+        mode: 'dynamic',
+        color: 'blue',
+    });
+
+    joystick.on('move', (evt, data) => {
+        if (data && data.vector) {
+            joystickDirection.x = data.vector.x;
+            joystickDirection.y = data.vector.y;
+        }
+    });
+
+    joystick.on('end', () => {
+        joystickDirection.x = 0;
+        joystickDirection.y = 0;
+    });
+} else {
+    joystickContainer.style.display = 'none';
+}
 
 // Event listeners for keyboard controls
 window.addEventListener('keydown', (e) => keys[e.key] = true);
@@ -37,10 +68,21 @@ window.addEventListener('keyup', (e) => keys[e.key] = false);
 
 // Movement function
 function movePlayer() {
-    if ((keys['w'] || keys['W']) && player.y > 0) player.y -= player.speed;
-    if ((keys['s'] || keys['S']) && player.y < canvas.height - player.size) player.y += player.speed;
-    if ((keys['a'] || keys['A']) && player.x > 0) player.x -= player.speed;
-    if ((keys['d'] || keys['D']) && player.x < canvas.width - player.size) player.x += player.speed;
+    if (isMobile && joystickDirection.x !== 0 && joystickDirection.y !== 0) {
+        // Mobile joystick movement
+        player.x += joystickDirection.x * player.speed;
+        player.y += joystickDirection.y * player.speed;
+    } else {
+        // Desktop keyboard movement
+        if ((keys['w'] || keys['W']) && player.y > 0) player.y -= player.speed;
+        if ((keys['s'] || keys['S']) && player.y < canvas.height - player.size) player.y += player.speed;
+        if ((keys['a'] || keys['A']) && player.x > 0) player.x -= player.speed;
+        if ((keys['d'] || keys['D']) && player.x < canvas.width - player.size) player.x += player.speed;
+    }
+
+    // Keep player within canvas bounds
+    player.x = Math.max(0, Math.min(canvas.width - player.size, player.x));
+    player.y = Math.max(0, Math.min(canvas.height - player.size, player.y));
 }
 
 // Enemy creation

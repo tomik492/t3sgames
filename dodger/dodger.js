@@ -2,8 +2,8 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
 // Adjust canvas size
-canvas.width = 600;
-canvas.height = 600;
+canvas.width = 450;
+canvas.height = 450;
 
 // Player object
 const player = {
@@ -17,7 +17,7 @@ const player = {
 
 // Enemies array
 const enemies = [];
-const enemySize = 30;
+const enemySize = 40;
 
 // Key tracking
 const keys = {};
@@ -50,7 +50,7 @@ function spawnEnemy() {
         y: Math.random() * (canvas.height - enemySize),
         dx: Math.random() > 0.5 ? 1 : -1,
         dy: Math.random() > 0.5 ? 1 : -1,
-        speed: 2,
+        speed: 3,
         size: enemySize,
         color: 'red',
     };
@@ -132,7 +132,7 @@ function startGame() {
             spawnEnemy();
             score++;
             updateScore();
-            player.speed += 0.1; // Increase player speed slightly with each enemy
+            player.speed += 0.2; // Increase player speed slightly with each enemy
         }
     }, 2000);
 
